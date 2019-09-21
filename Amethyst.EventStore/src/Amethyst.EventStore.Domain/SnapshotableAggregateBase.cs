@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Amethyst.EventStore.Domain.Abstractions;
+﻿using Amethyst.EventStore.Domain.Abstractions;
 
 namespace Amethyst.EventStore.Domain
 {
@@ -13,29 +11,7 @@ namespace Amethyst.EventStore.Domain
         {
         }
 
-        protected SnapshotableAggregate(
-            TId id,
-            long version,
-            IReadOnlyCollection<IDomainEvent> events)
-            : base(id, version, events)
-        {
-        }
-
-        protected SnapshotableAggregate(
-            TId id,
-            long version,
-            IAggregateSnapshot snapshot,
-            IReadOnlyCollection<IDomainEvent> events)
-            : base(id, version)
-        {
-            if (events == null) throw new ArgumentNullException(nameof(events));
-            if (snapshot == null) throw new ArgumentNullException(nameof(snapshot));
-
-            ApplySnapshot(snapshot);
-            ApplyCommittedEvents(events);
-        }
-
-        private void ApplySnapshot(IAggregateSnapshot snapshot)
+        protected void ApplySnapshot(IAggregateSnapshot snapshot)
         {
             StoredSnapshotVersion = snapshot.Version;
             OnApplyEvent(snapshot);

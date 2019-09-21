@@ -24,14 +24,6 @@ namespace Amethyst.EventStore.Domain
 
             Version = version;
         }
-
-        protected AggregateBase(TId id, long version, IReadOnlyCollection<IDomainEvent> events)
-            : this(id, version)
-        {
-            if (events == null) throw new ArgumentNullException(nameof(events));
-
-            ApplyCommittedEvents(events);
-        }
         
         public IReadOnlyCollection<IDomainEvent> UncommittedEvents => _uncommittedEvents.AsReadOnly();
 
