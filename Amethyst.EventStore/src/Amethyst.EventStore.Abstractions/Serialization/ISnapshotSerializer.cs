@@ -1,7 +1,7 @@
 using System.IO;
 using Amethyst.EventStore.Domain.Abstractions;
 
-namespace Amethyst.EventStore.Streams.Abstractions.Serialization
+namespace Amethyst.EventStore.Abstractions.Serialization
 {
     public interface ISnapshotSerializer
     {

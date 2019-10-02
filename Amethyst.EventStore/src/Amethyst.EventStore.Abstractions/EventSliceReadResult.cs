@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Amethyst.EventStore.Streams.Abstractions
+namespace Amethyst.EventStore.Abstractions
 {
     public readonly struct EventSliceReadResult
     {

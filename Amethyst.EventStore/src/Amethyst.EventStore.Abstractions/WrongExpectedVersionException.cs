@@ -1,6 +1,6 @@
 using System;
 
-namespace Amethyst.EventStore.Streams.Abstractions
+namespace Amethyst.EventStore.Abstractions
 {
     public class WrongExpectedVersionException : Exception
     {

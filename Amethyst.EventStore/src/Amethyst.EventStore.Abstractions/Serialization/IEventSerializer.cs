@@ -1,7 +1,7 @@
 using System;
-using Amethyst.EventStore.Streams.Abstractions.Metadata;
+using Amethyst.EventStore.Abstractions.Metadata;
 
-namespace Amethyst.EventStore.Streams.Abstractions.Serialization
+namespace Amethyst.EventStore.Abstractions.Serialization
 {
     public interface IEventSerializer
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Amethyst.EventStore.Streams.Abstractions.Metadata
+namespace Amethyst.EventStore.Abstractions.Metadata
 {
     public interface IMetadataContext
     {

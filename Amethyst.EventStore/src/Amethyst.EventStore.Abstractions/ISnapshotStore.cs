@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Amethyst.EventStore.Domain.Abstractions;
 using SharpJuice.Essentials;
 
-namespace Amethyst.EventStore.Streams.Abstractions
+namespace Amethyst.EventStore.Abstractions
 {
     public interface ISnapshotStore
     {
