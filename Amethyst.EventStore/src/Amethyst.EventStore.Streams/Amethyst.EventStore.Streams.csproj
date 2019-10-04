@@ -11,4 +11,9 @@
         <WarningsAsErrors />
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Amethyst.EventStore.Abstractions\Amethyst.EventStore.Abstractions.csproj" />
+      <ProjectReference Include="..\Amethyst.EventStore.Domain\Amethyst.EventStore.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

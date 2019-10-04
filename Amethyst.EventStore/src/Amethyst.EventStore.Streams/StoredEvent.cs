@@ -1,20 +1,22 @@
 using System;
+using Amethyst.EventStore.Abstractions;
+using Amethyst.EventStore.Domain.Abstractions;
 
-namespace Amethyst.EventStore.Abstractions
+namespace Amethyst.EventStore.Streams
 {
-    public sealed class RecordedEvent
+    public sealed class StoredEvent
     {
-        public RecordedEvent(
+        public StoredEvent(
             StreamId streamId,
             Guid id,
             long number,
             string type,
             DateTime created,
-            byte[] data,
-            byte[] metadata)
+            IDomainEvent data,
+            object metadata = null)
         {
             StreamId = streamId;
-            this.Id = id;
+            Id = id;
             Number = number;
             Type = type;
             Created = created;
@@ -31,9 +33,9 @@ namespace Amethyst.EventStore.Abstractions
         public string Type { get; }
         
         public DateTime Created { get; }
+
+        public IDomainEvent Data { get; }
         
-        public byte[] Data { get; }
-        
-        public byte[] Metadata { get; }
+        public object Metadata { get; }
     }
 }
