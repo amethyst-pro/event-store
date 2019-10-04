@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SharpJuice.Essentials" Version="2.0.2" />
+        <PackageReference Include="SharpJuice.Essentials" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
