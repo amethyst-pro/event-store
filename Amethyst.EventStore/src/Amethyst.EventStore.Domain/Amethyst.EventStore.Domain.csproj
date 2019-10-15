@@ -1,18 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <LangVersion>latest</LangVersion>
-        <TargetFramework>netstandard2.1</TargetFramework>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningsAsErrors />
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Amethyst.EventStore.Domain.Abstractions\Amethyst.EventStore.Domain.Abstractions.csproj" />
-    </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\Amethyst.Domain\Amethyst.Domain.csproj" />
+    <ProjectReference Include="..\Amethyst.EventStore.Streams.Abstractions\Amethyst.EventStore.Streams.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

@@ -5,8 +5,6 @@ namespace Amethyst.EventStore.Kafka
 {
     public sealed class ProducerSettings
     {
-        private const int DefaultMaxMessageBytes = 5 * 1024 * 1024;
-
         public ProducerSettings(string brokers)
         {
             if (string.IsNullOrEmpty(brokers))
@@ -15,11 +13,11 @@ namespace Amethyst.EventStore.Kafka
             Config = new ProducerConfig
             {
                 BootstrapServers = brokers,
-                MessageMaxBytes = DefaultMaxMessageBytes,
                 Acks = Acks.All,
                 EnableIdempotence = true,
                 MaxInFlight = 1,
-                MessageSendMaxRetries = 5
+                MessageSendMaxRetries = 5,
+                LingerMs = 50
             };
         }
 

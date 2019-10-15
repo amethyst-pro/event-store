@@ -12,12 +12,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Confluent.Kafka" Version="1.2.0" />
+        <PackageReference Include="Confluent.Kafka" Version="1.2.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Amethyst.EventStore.Abstractions\Amethyst.EventStore.Abstractions.csproj" />
+      <ProjectReference Include="..\Amethyst.EventStore.Postgres\Amethyst.EventStore.Postgres.csproj" />
     </ItemGroup>
 
 </Project>

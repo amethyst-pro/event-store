@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amethyst.EventStore.Abstractions;
-using Amethyst.EventStore.Abstractions.Publishing;
 using Amethyst.EventStore.Abstractions.Serialization;
+using Amethyst.EventStore.Postgres.Publishing;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +12,7 @@ namespace Amethyst.EventStore.Kafka
     public sealed class EventPublisher : IEventPublisher
     {
         private readonly IRecordedEventSerializer _serializer;
-        private readonly IProducer _kafkaProducer;
+        private readonly KafkaProducer _kafkaProducer;
         private readonly ILogger<EventPublisher> _logger;
 
         public EventPublisher(

@@ -1,12 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Amethyst.EventStore.Abstractions.Publishing;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
 
 namespace Amethyst.EventStore.Kafka
 {
-    public sealed class KafkaProducer : IProducer
+    internal sealed class KafkaProducer 
     {
         private readonly IProducer<byte[], byte[]> _producer;
         private readonly string _topic;
