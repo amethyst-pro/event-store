@@ -1,4 +1,4 @@
-﻿namespace Amethyst.EventStore.Abstractions.Reading
+﻿namespace Amethyst.EventStore.Abstractions
 {
     public interface IEventMaterializer<out T>
     {

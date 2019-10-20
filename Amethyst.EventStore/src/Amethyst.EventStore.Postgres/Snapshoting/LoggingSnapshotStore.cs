@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpJuice.Essentials;
 
-namespace Amethyst.EventStore.Postgres
+namespace Amethyst.EventStore.Postgres.Snapshoting
 {
     public sealed class LoggingSnapshotStore : ISnapshotStore
     {

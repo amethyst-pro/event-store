@@ -14,7 +14,7 @@ namespace Amethyst.EventStore.Kafka
         public KafkaProducer(ProducerSettings settings, string topic, ILoggerFactory loggerFactory)
         {
             if (string.IsNullOrEmpty(topic))
-                throw new ArgumentException("Topics not specified.", nameof(topic));
+                throw new ArgumentException("Topic is not specified.", nameof(topic));
 
             if (string.IsNullOrWhiteSpace(settings.Config.BootstrapServers))
                 throw new ArgumentException("Servers are not specified.");
@@ -38,6 +38,6 @@ namespace Amethyst.EventStore.Kafka
             _logger.LogTrace($"Delivered to: {deliveryReport.TopicPartitionOffset}");
         }
 
-        public void Dispose() => _producer?.Dispose();
+        public void Dispose() => _producer.Dispose();
     }
 }

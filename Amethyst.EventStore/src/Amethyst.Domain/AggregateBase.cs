@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpJuice.Essentials;
 
 namespace Amethyst.Domain
 {
@@ -23,7 +24,7 @@ namespace Amethyst.Domain
             Version = version;
         }
 
-        public IReadOnlyCollection<object> UncommittedEvents => _uncommittedEvents.AsReadOnly();
+        public IReadOnlyCollection<object> UncommittedEvents => _uncommittedEvents;
 
         public TId Id { get; }
 
@@ -37,14 +38,14 @@ namespace Amethyst.Domain
 
         public bool HasChanges() => UncommittedEvents.Any();
 
+        protected abstract void OnApplyEvent(object @event);
+
         protected void ApplyEvent(object @event)
         {
             OnApplyEvent(@event);
 
             _uncommittedEvents.Add(@event);
         }
-
-        protected abstract void OnApplyEvent(object @event);
 
         protected void ApplyCommittedEvents(IReadOnlyCollection<object> events)
         {

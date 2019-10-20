@@ -1,6 +1,6 @@
 using System;
 
-namespace Amethyst.EventStore.Postgres
+namespace Amethyst.EventStore.Postgres.Database
 {
     public sealed class PgsqlConnections
     {

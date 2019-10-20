@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Amethyst.EventStore.Streams.Abstractions;
 
 namespace Amethyst.EventStore.Streams
 {

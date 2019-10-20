@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amethyst.EventStore.Abstractions;
+using Amethyst.EventStore.Postgres.Database;
 using Amethyst.EventStore.Postgres.Publishing;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -12,27 +13,27 @@ namespace Amethyst.EventStore.Postgres
 {
     public sealed class EventsWriter : IEventsWriter
     {
-        private readonly PgsqlConnections _connections;
         private readonly IEventStoreContext _context;
         private readonly IEventTypeRegistry _typeRegistry;
+        private readonly IConnectionFactory _connectionFactory;
         private readonly Outbox _outbox;
         private readonly ILogger<EventsWriter> _logger;
 
         public EventsWriter(
-            PgsqlConnections connections,
             IEventStoreContext context,
             IEventTypeRegistry typeRegistry,
+            IConnectionFactory connectionFactory,
             Outbox outbox,
             ILogger<EventsWriter> logger)
         {
-            _connections = connections;
-            _context = context;
-            _typeRegistry = typeRegistry;
-            _outbox = outbox;
-            _logger = logger;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _typeRegistry = typeRegistry ?? throw new ArgumentNullException(nameof(typeRegistry));
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            _outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<WriteResult> AppendToStream(
+        public async Task<WriteResult> AppendToStreamAsync(
             StreamId stream,
             long expectedVersion,
             IReadOnlyCollection<EventData> events)
@@ -46,23 +47,21 @@ namespace Amethyst.EventStore.Postgres
             if(events.Count == 0)
                 return new WriteResult(ExpectedVersion.NoStream);
 
-            using (var connection = new NpgsqlConnection(_connections.Default))
+            using var connection = _connectionFactory.CreateWriteConnection();
+            await connection.OpenWithSchemaAsync(_context.GetSchema(stream));
+
+            var (writeResult, sendingOperation) = await Append(stream, expectedVersion, events, connection);
+
+            try
             {
-                await connection.OpenWithSchemaAsync(_context.GetSchema(stream));
-
-                var (writeResult, sendingOperation) = await Append(stream, expectedVersion, events, connection);
-
-                try
-                {
-                    await sendingOperation.SendAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Exception occured on sending event.");
-                }
-
-                return writeResult;
+                await sendingOperation.SendAsync();
             }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Exception occured on sending event.");
+            }
+
+            return writeResult;
         }
 
         private async Task<(WriteResult result, IEventSendingOperation sendingOperation)> Append(
@@ -71,26 +70,24 @@ namespace Amethyst.EventStore.Postgres
             IReadOnlyCollection<EventData> events,
             NpgsqlConnection connection)
         {
-            using (var transaction = connection.BeginTransaction())
-            {
-                var eventsCount = events.Count;
+            using var transaction = connection.BeginTransaction();
+            var eventsCount = events.Count;
 
-                var newLastEventNumber = await UpsertStream(stream, expectedVersion, eventsCount,
-                    connection, transaction);
+            var newLastEventNumber = await UpsertStream(stream, expectedVersion, eventsCount,
+                connection, transaction);
 
-                var prevLastEventNumber = newLastEventNumber - events.Count;
+            var prevLastEventNumber = newLastEventNumber - events.Count;
 
-                var recordingEvents = GetRecordedEvents(stream, prevLastEventNumber, events).ToArray();
+            var recordingEvents = GetRecordedEvents(stream, prevLastEventNumber, events).ToArray();
 
-                await AddEvents(recordingEvents, connection, transaction);
+            await AddEvents(recordingEvents, connection, transaction);
 
-                var sendingOperation = await _outbox.PrepareSendingAsync(
-                    stream, recordingEvents, connection, transaction);
+            var sendingOperation = await _outbox.PrepareSendingAsync(
+                stream, recordingEvents, connection, transaction);
 
-                await transaction.CommitAsync();
+            await transaction.CommitAsync();
 
-                return (new WriteResult(newLastEventNumber), sendingOperation);
-            }
+            return (new WriteResult(newLastEventNumber), sendingOperation);
         }
 
         private async Task<long> UpsertStream(
@@ -100,23 +97,22 @@ namespace Amethyst.EventStore.Postgres
             NpgsqlConnection connection,
             NpgsqlTransaction transaction)
         {
-            using (var streamUpsert = BuildUpsertStreamCommand(
+            using var streamUpsert = BuildUpsertStreamCommand(
                 stream,
                 expectedVersion,
                 eventsCount,
                 connection,
-                transaction))
-            {
-                await streamUpsert.PrepareAsync();
+                transaction);
 
-                var result = await streamUpsert.ExecuteScalarAsync();
+            await streamUpsert.PrepareAsync();
 
-                if (result == null)
-                    throw new WrongExpectedVersionException(
-                        "Stream expected version doesn't match current.");
+            var result = await streamUpsert.ExecuteScalarAsync();
 
-                return (long) result;
-            }
+            if (result == null)
+                throw new WrongExpectedVersionException(
+                    "Stream expected version doesn't match current.");
+
+            return (long) result;
         }
 
         private NpgsqlCommand BuildUpsertStreamCommand(
@@ -202,32 +198,30 @@ namespace Amethyst.EventStore.Postgres
             var insert = @"INSERT INTO events (event_id, stream_id, number, type_id, data, metadata)
                 VALUES (@eventId, @streamId, @number, @typeId, @data, @metadata);";
 
-            using (var insertCommand = new NpgsqlCommand(insert, connection, transaction))
-            {
-                insertCommand.Parameters.AddRange(
-                    new NpgsqlParameter[]
-                    {
-                        idParameter,
-                        streamIdParameter,
-                        numberParameter,
-                        typeParameter,
-                        dataParameter,
-                        metadataParameter
-                    });
-
-                await insertCommand.PrepareAsync();
-
-                foreach (var e in events)
+            using var insertCommand = new NpgsqlCommand(insert, connection, transaction);
+            insertCommand.Parameters.AddRange(
+                new NpgsqlParameter[]
                 {
-                    idParameter.TypedValue = e.Id;
-                    streamIdParameter.TypedValue = e.StreamId.Id;
-                    numberParameter.TypedValue = e.Number;
-                    typeParameter.TypedValue = _typeRegistry.GetOrAddTypeId(e.Type, e.StreamId);
-                    dataParameter.TypedValue = e.Data;
-                    metadataParameter.TypedValue = e.Metadata;
+                    idParameter,
+                    streamIdParameter,
+                    numberParameter,
+                    typeParameter,
+                    dataParameter,
+                    metadataParameter
+                });
 
-                    await insertCommand.ExecuteNonQueryAsync();
-                }
+            await insertCommand.PrepareAsync();
+
+            foreach (var e in events)
+            {
+                idParameter.TypedValue = e.Id;
+                streamIdParameter.TypedValue = e.StreamId.Id;
+                numberParameter.TypedValue = e.Number;
+                typeParameter.TypedValue = _typeRegistry.GetOrAddTypeId(e.Type, e.StreamId);
+                dataParameter.TypedValue = e.Data;
+                metadataParameter.TypedValue = e.Metadata;
+
+                await insertCommand.ExecuteNonQueryAsync();
             }
         }
     }

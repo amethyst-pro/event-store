@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amethyst.EventStore.Abstractions;
+using Amethyst.EventStore.Streams.Abstractions;
 
 namespace Amethyst.EventStore.Streams
 {
@@ -26,7 +28,7 @@ namespace Amethyst.EventStore.Streams
                 .Select(e => _serializer.Serialize(e.Event, Guid.NewGuid(), e.Metadata))
                 .ToArray();
 
-            return _writer.AppendToStream(stream, expectedVersion, data);
+            return _writer.AppendToStreamAsync(stream, expectedVersion, data);
         }
     }
 }

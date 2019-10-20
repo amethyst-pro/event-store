@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Amethyst.EventStore.Postgres.Publishing
+namespace Amethyst.EventStore.Postgres
 {
     public interface IEventSendingOperation
     {

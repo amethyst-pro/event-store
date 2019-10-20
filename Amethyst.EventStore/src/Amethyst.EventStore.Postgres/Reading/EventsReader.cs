@@ -1,28 +1,26 @@
 ﻿using System;
 using System.Data.Common;
-using System.Threading;
 using System.Threading.Tasks;
 using Amethyst.EventStore.Abstractions;
+using Amethyst.EventStore.Postgres.Database;
 using Npgsql;
 
 namespace Amethyst.EventStore.Postgres.Reading
 {
     public sealed class EventsReader<T> : IEventsReader<T>
     {
-        private static int _connectionCounter;
-
-        private readonly PgsqlConnections _connections;
         private readonly IEventStoreContext _context;
         private readonly IDbEventReader<T> _eventDbReader;
+        private readonly IConnectionFactory _connectionFactory;
 
         public EventsReader(
-            PgsqlConnections settings,
             IEventStoreContext context,
-            IDbEventReader<T> eventDbReader)
+            IDbEventReader<T> eventDbReader,
+            IConnectionFactory connectionFactory)
         {
-            _connections = settings ?? throw new ArgumentNullException(nameof(settings));
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _eventDbReader = eventDbReader;
+            _connectionFactory = connectionFactory;
         }
 
         public async Task<SliceReadResult<T>> ReadEventsForwardAsync(StreamId stream, long start, int count)
@@ -33,12 +31,11 @@ namespace Amethyst.EventStore.Postgres.Reading
             if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
-            using (var connection = GetConnection())
-            {
-                await connection.OpenWithSchemaAsync(_context.GetSchema(stream));
+            using var connection = _connectionFactory.CreateReadConnection();
 
-                return await ReadEventsForwardAsync(stream, start, count, connection);
-            }
+            await connection.OpenWithSchemaAsync(_context.GetSchema(stream));
+
+            return await ReadEventsForwardAsync(stream, start, count, connection);
         }
 
         public async Task<SliceReadResult<T>> ReadEventsForwardAsync(
@@ -48,22 +45,20 @@ namespace Amethyst.EventStore.Postgres.Reading
             NpgsqlConnection connection,
             NpgsqlTransaction transaction = null)
         {
-            using (var command = BuildCommand(stream, start, count, connection, transaction))
-            {
-                await command.PrepareAsync();
+            using var command = BuildCommand(stream, start, count, connection, transaction);
+            await command.PrepareAsync();
 
-                for (var attempt = 1;; ++attempt)
+            for (var attempt = 1;; ++attempt)
+            {
+                try
                 {
-                    try
-                    {
-                        using (var reader = await command.ExecuteReaderAsync())
-                            return await ReadEventsSlice(stream, reader);
-                    }
-                    catch (InconsistentReadException)
-                    {
-                        if (attempt > 15)
-                            throw new InvalidOperationException("Inconsistent read attempts exceeded.");
-                    }
+                    using var reader = await command.ExecuteReaderAsync();
+                    return await ReadEventsSlice(stream, reader);
+                }
+                catch (InconsistentReadException)
+                {
+                    if (attempt > 15)
+                        throw new InvalidOperationException("Inconsistent read attempts exceeded.");
                 }
             }
         }
@@ -73,12 +68,10 @@ namespace Amethyst.EventStore.Postgres.Reading
             NpgsqlConnection connection,
             NpgsqlTransaction transaction = null)
         {
-            using (var getLastSentEvent = BuildGetLastSentCommand(stream, connection, transaction))
-            {
-                await getLastSentEvent.PrepareAsync();
+            using var getLastSentEvent = BuildGetLastSentCommand(stream, connection, transaction);
+            await getLastSentEvent.PrepareAsync();
 
-                return (long) await getLastSentEvent.ExecuteScalarAsync();
-            }
+            return (long) await getLastSentEvent.ExecuteScalarAsync();
         }
 
         private static NpgsqlCommand BuildGetLastSentCommand(
@@ -104,7 +97,7 @@ namespace Amethyst.EventStore.Postgres.Reading
             var hasStream = await reader.ReadAsync();
 
             if (!hasStream)
-                return Empty(ReadStatus.NoStream, stream);
+                return SliceReadResult<T>.Empty(ReadStatus.NoStream, stream);
 
             var streamLastEventNumber = reader.GetInt64(0);
 
@@ -113,7 +106,7 @@ namespace Amethyst.EventStore.Postgres.Reading
             var result = await _eventDbReader.Read(stream, reader);
 
             if (result.Events.Count == 0)
-                return Empty(ReadStatus.NotFound, stream);
+                return SliceReadResult<T>.Empty(ReadStatus.NotFound, stream);
 
             if (streamLastEventNumber < result.LastEventNumber)
                 throw new InconsistentReadException();
@@ -160,24 +153,6 @@ namespace Amethyst.EventStore.Postgres.Reading
             };
 
             return command;
-        }
-
-        private static SliceReadResult<T> Empty(ReadStatus status, StreamId stream)
-        {
-            return new SliceReadResult<T>(
-                status,
-                stream,
-                Array.Empty<T>(), 0, true);
-        }
-
-        //TODO: move to connection factory
-        private NpgsqlConnection GetConnection()
-        {
-            var connection = _connections.ReadOnly;
-            if (Interlocked.Increment(ref _connectionCounter) % 3 == 0)
-                connection = _connections.Default;
-
-            return new NpgsqlConnection(connection);
         }
     }
 }

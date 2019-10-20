@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Threading.Tasks;
-using Amethyst.EventStore.Abstractions.Reading;
+using Amethyst.EventStore.Abstractions;
 
 namespace Amethyst.EventStore.Postgres.Reading
 {
@@ -18,10 +18,11 @@ namespace Amethyst.EventStore.Postgres.Reading
             _typeRegistry = typeRegistry ?? throw new ArgumentNullException(nameof(typeRegistry));
         }
 
-        public async Task<ReadResult<T>> Read(StreamId stream, DbDataReader reader)
+        public async Task<SliceReadResult<T>> Read(StreamId stream, DbDataReader reader)
         {
             var events = new List<T>();
             var lastEventNumber = 0L;
+            var dataReader = new EventDataReader(reader);
 
             while (await reader.ReadAsync())
             {
@@ -37,23 +38,26 @@ namespace Amethyst.EventStore.Postgres.Reading
                         number,
                         type,
                         created),
-                    new DbReader(reader)
+                    dataReader
                 );
 
                 events.Add(@event);
                 lastEventNumber = number;
             }
 
-            return new ReadResult<T>(
+            return new SliceReadResult<T>(
+                ReadStatus.Success,
+                stream,
                 events,
-                events.Count > 0 ? lastEventNumber : 0L);
+                lastEventNumber,
+                true);
         }
 
-        private sealed class DbReader : IEventDataReader
+        private sealed class EventDataReader : IEventDataReader
         {
             private readonly DbDataReader _reader;
 
-            public DbReader(DbDataReader reader)
+            public EventDataReader(DbDataReader reader)
             {
                 _reader = reader;
             }

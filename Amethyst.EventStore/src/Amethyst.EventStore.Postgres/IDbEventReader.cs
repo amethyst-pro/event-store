@@ -5,6 +5,6 @@ namespace Amethyst.EventStore.Postgres
 {
     public interface IDbEventReader<T>
     {
-        Task<Reading.ReadResult<T>> Read(StreamId stream, DbDataReader reader);
+        Task<SliceReadResult<T>> Read(StreamId stream, DbDataReader reader);
     }
 }

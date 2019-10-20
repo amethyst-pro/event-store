@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Amethyst.EventStore.Streams.Abstractions;
 
 namespace Amethyst.EventStore.Streams
 {

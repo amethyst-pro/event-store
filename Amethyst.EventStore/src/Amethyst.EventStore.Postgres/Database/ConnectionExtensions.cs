@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Npgsql;
 
-namespace Amethyst.EventStore.Postgres
+namespace Amethyst.EventStore.Postgres.Database
 {
     public static class ConnectionExtensions
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amethyst.EventStore.Abstractions;
-using Amethyst.EventStore.Abstractions.Serialization;
+using Amethyst.EventStore.Postgres;
 using Amethyst.EventStore.Postgres.Publishing;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;

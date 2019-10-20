@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Amethyst.Domain;
-using Amethyst.EventStore.Domain.Abstractions;
 
 namespace Amethyst.EventStore.Domain
 {

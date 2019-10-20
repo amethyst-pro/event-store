@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Amethyst.Domain;
 
-namespace Amethyst.EventStore.Domain.Abstractions
+namespace Amethyst.EventStore.Domain
 {
     public interface ISnapshotableAggregateFactory<out TAggregate, in TId>
         : IAggregateFactory<TAggregate, TId>

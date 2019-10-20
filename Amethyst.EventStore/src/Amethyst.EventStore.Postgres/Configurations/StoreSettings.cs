@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amethyst.EventStore.Postgres.Database;
 
 namespace Amethyst.EventStore.Postgres.Configurations
 {

@@ -11,6 +11,10 @@
         <WarningsAsErrors />
     </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SharpJuice.Essentials" Version="2.2.0" />
+  </ItemGroup>
+  
     <ItemGroup>
       <ProjectReference Include="..\Amethyst.EventStore\Amethyst.EventStore.csproj" />
     </ItemGroup>

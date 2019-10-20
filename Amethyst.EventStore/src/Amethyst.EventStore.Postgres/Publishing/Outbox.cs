@@ -29,22 +29,18 @@ namespace Amethyst.EventStore.Postgres.Publishing
                 throw new ArgumentException("Events is empty", nameof(events));
 
             var streamLock = stream.GetLockId();
-            long lastSentEventNumber;
 
-            using (var prepareSending = BuildPrepareCommand(stream, streamLock, connection, transaction))
-            {
-                await prepareSending.PrepareAsync();
-                using (var reader = await prepareSending.ExecuteReaderAsync())
-                {
-                    await reader.NextResultAsync();
-                    await reader.ReadAsync();
-                    lastSentEventNumber = reader.GetInt64(0);
-                }
-            }
+            using var prepareSending = BuildPrepareCommand(stream, streamLock, connection, transaction);
+            await prepareSending.PrepareAsync();
             
+            using var reader = await prepareSending.ExecuteReaderAsync();
+            await reader.NextResultAsync();
+            await reader.ReadAsync();
+            
+            var lastSentEventNumber = reader.GetInt64(0);
             var startSendFrom = lastSentEventNumber + 1;
 
-            if (events.First().EventNumber != startSendFrom)
+            if (events.First().Number != startSendFrom)
             {
                 var readResult = await _reader.ReadEventsForwardAsync(
                     stream, startSendFrom, int.MaxValue, connection, transaction);
@@ -61,9 +57,9 @@ namespace Amethyst.EventStore.Postgres.Publishing
                 if (result.Status != ReadStatus.Success)
                     throw new InvalidOperationException($"Events read status is {result.Status}");
 
-                if (result.Events.First().EventNumber != firstEventNumber)
+                if (result.Events.First().Number != firstEventNumber)
                     throw new InvalidOperationException(
-                        $"First event must have number {firstEventNumber} but had {result.Events.First().EventNumber}");
+                        $"First event must have number {firstEventNumber} but had {result.Events.First().Number}");
 
                 if (result.Events.Count <= prevEventsCount)
                     throw new InvalidOperationException(

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Amethyst.EventStore.Domain.Abstractions;
 using Amethyst.EventStore.Domain.Tests.Fakes;
 using FluentAssertions;
 using Xunit;

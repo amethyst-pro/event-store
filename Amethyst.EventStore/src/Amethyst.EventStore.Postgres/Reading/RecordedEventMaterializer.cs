@@ -1,5 +1,4 @@
 ﻿using Amethyst.EventStore.Abstractions;
-using Amethyst.EventStore.Abstractions.Reading;
 
 namespace Amethyst.EventStore.Postgres.Reading
 {

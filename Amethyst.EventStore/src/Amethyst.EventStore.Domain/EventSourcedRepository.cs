@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amethyst.Domain;
-using Amethyst.EventStore.Domain.Abstractions;
 using Amethyst.EventStore.Streams.Abstractions;
 using Amethyst.EventStore.Streams.Abstractions.Metadata;
 using SharpJuice.Essentials;

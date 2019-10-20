@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Amethyst.EventStore.Postgres.Database;
 using Npgsql;
 using SharpJuice.Essentials;
 
-namespace Amethyst.EventStore.Postgres
+namespace Amethyst.EventStore.Postgres.Snapshoting
 {
     public sealed class SnapshotStore : ISnapshotStore
     {

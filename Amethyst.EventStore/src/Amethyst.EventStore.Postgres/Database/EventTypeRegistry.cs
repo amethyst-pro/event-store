@@ -3,19 +3,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Npgsql;
 
-namespace Amethyst.EventStore.Postgres
+namespace Amethyst.EventStore.Postgres.Database
 {
     public sealed class EventTypeRegistry : IEventTypeRegistry
     {
-        private readonly PgsqlConnections _connections;
+        private readonly IConnectionFactory _connectionFactory;
         private readonly IEventStoreContext _context;
 
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<short, string>> _items =
             new ConcurrentDictionary<string, ConcurrentDictionary<short, string>>();
 
-        public EventTypeRegistry(PgsqlConnections connections, IEventStoreContext context)
+        public EventTypeRegistry(IConnectionFactory connectionFactory, IEventStoreContext context)
         {
-            _connections = connections;
+            _connectionFactory = connectionFactory;
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
@@ -31,7 +31,7 @@ namespace Amethyst.EventStore.Postgres
         {
             var schema = _context.GetSchema(streamId);
             var registry = _items.GetOrAdd(schema, _ => new ConcurrentDictionary<short, string>());
-            
+
             foreach (var pair in registry)
             {
                 if (pair.Value.Equals(typeName, StringComparison.OrdinalIgnoreCase))
@@ -68,55 +68,48 @@ namespace Amethyst.EventStore.Postgres
 
             return type;
         }
-        
+
         private ConcurrentDictionary<short, string> GetTypes(string schema)
         {
-            using (var connection = new NpgsqlConnection(_connections.ReadOnly))
-            {
-                connection.Open();
-                return GetTypes(schema, connection);
-            }
+            using var connection = _connectionFactory.CreateReadConnection();
+
+            connection.Open();
+            return GetTypes(schema, connection);
         }
 
         private static ConcurrentDictionary<short, string> GetTypes(string schema, NpgsqlConnection connection)
         {
             var types = new ConcurrentDictionary<short, string>();
 
-            using (var command = new NpgsqlCommand($"SELECT id, name from \"{schema}\".event_types", connection))
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    types.TryAdd(reader.GetInt16(0), reader.GetString(1));
-                }
-            }
+            using var command = new NpgsqlCommand($"SELECT id, name from \"{schema}\".event_types", connection);
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+                types.TryAdd(reader.GetInt16(0), reader.GetString(1));
 
             return types;
         }
 
         private short AddNewType(string typeName, string schema)
         {
-            using (var connection = new NpgsqlConnection(_connections.Default))
-            {
-                connection.Open();
+            using var connection = _connectionFactory.CreateWriteConnection();
+            connection.Open();
 
-                using (var command = new NpgsqlCommand($@"
+            using var command = new NpgsqlCommand($@"
                     INSERT INTO ""{schema}"".event_types (name)
                     VALUES (@name)
                     ON CONFLICT (name) DO NOTHING;
-                    SELECT id FROM ""{schema}"".event_types WHERE name = @name;
-                ", connection))
-                {
-                    command.Parameters.AddWithValue("name", typeName);
+                    SELECT id FROM ""{schema}"".event_types WHERE name = @name;",
+                connection);
 
-                    var newId = command.ExecuteScalar();
+            command.Parameters.AddWithValue("name", typeName);
 
-                    if (newId == null)
-                        throw new InvalidOperationException("Can't add new event type");
+            var newId = command.ExecuteScalar();
 
-                    return (short) newId;
-                }
-            }
+            if (newId == null)
+                throw new InvalidOperationException("Can't add new event type");
+
+            return (short) newId;
         }
     }
 }

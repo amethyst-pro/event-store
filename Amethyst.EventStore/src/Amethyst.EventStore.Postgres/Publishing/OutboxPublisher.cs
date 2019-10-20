@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Amethyst.EventStore.Abstractions;
 using Amethyst.EventStore.Postgres.Configurations;
+using Amethyst.EventStore.Postgres.Database;
 using Amethyst.EventStore.Postgres.Reading;
 using Npgsql;
 
@@ -53,18 +54,16 @@ namespace Amethyst.EventStore.Postgres.Publishing
 
             async Task Publish(EventStoreSchema schema)
             {
-                using (var connection = new NpgsqlConnection(_connections.Default))
-                {
-                    await connection.OpenWithSchemaAsync(schema.Schema);
+                using var connection = new NpgsqlConnection(_connections.Default);
+                await connection.OpenWithSchemaAsync(schema.Schema);
 
-                    try
-                    {
-                        await SendIfAny(schema.Category, schema.Context, connection);
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Add(ex);
-                    }
+                try
+                {
+                    await SendIfAny(schema.Category, schema.Context, connection);
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
                 }
             }
         }
@@ -130,48 +129,39 @@ namespace Amethyst.EventStore.Postgres.Publishing
         {
             const string tryLock = "SELECT pg_try_advisory_lock(@lock)";
 
-            using (var command = new NpgsqlCommand(tryLock, connection))
-            {
-                command.Parameters.Add(new NpgsqlParameter<long>("lock", lockId));
+            using var command = new NpgsqlCommand(tryLock, connection);
+            command.Parameters.Add(new NpgsqlParameter<long>("lock", lockId));
 
-                await command.PrepareAsync();
+            await command.PrepareAsync();
 
-                return (bool) await command.ExecuteScalarAsync();
-            }
+            return (bool) await command.ExecuteScalarAsync();
         }
 
         private static async Task Unlock(long lockId, NpgsqlConnection connection)
         {
             const string unlock = "SELECT pg_advisory_unlock(@lock);";
 
-            using (var command = new NpgsqlCommand(unlock, connection))
-            {
-                command.Parameters.Add(new NpgsqlParameter<long>("lock", lockId));
+            using var command = new NpgsqlCommand(unlock, connection);
+            command.Parameters.Add(new NpgsqlParameter<long>("lock", lockId));
 
-                await command.PrepareAsync();
+            await command.PrepareAsync();
 
-                await command.ExecuteScalarAsync();
-            }
+            await command.ExecuteScalarAsync();
         }
 
         private async Task<IReadOnlyCollection<Guid>> GetTopOfOutboxStreams(NpgsqlConnection connection)
         {
             var select = $"SELECT stream_id FROM outbox ORDER BY RANDOM() LIMIT {MaxStreamsPerRead}";
-            using (var command = new NpgsqlCommand(select, connection))
-            {
-                await command.PrepareAsync();
+            using var command = new NpgsqlCommand(@select, connection);
+            await command.PrepareAsync();
 
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var ids = new List<Guid>();
-                    while (await reader.ReadAsync())
-                    {
-                        ids.Add(reader.GetGuid(0));
-                    }
+            using var reader = await command.ExecuteReaderAsync();
 
-                    return ids;
-                }
-            }
+            var ids = new List<Guid>();
+            while (await reader.ReadAsync())
+                ids.Add(reader.GetGuid(0));
+
+            return ids;
         }
 
         private readonly struct EventStoreSchema

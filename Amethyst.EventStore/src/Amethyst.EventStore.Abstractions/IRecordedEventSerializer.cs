@@ -1,4 +1,4 @@
-namespace Amethyst.EventStore.Abstractions.Serialization
+namespace Amethyst.EventStore.Abstractions
 {
     public interface IRecordedEventSerializer
     {

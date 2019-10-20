@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Amethyst.EventStore
 {
@@ -9,6 +10,9 @@ namespace Amethyst.EventStore
         public readonly IReadOnlyCollection<T> Events;
         public readonly long LastEventNumber;
         public readonly bool IsEndOfStream;
+
+        public static SliceReadResult<T> Empty(ReadStatus status, StreamId stream) =>
+            new SliceReadResult<T>(status, stream, Array.Empty<T>(), 0, true);
 
         public SliceReadResult(
             ReadStatus status,

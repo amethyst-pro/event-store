@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Amethyst.EventStore.Abstractions;
 
-namespace Amethyst.EventStore.Postgres.Publishing
+namespace Amethyst.EventStore.Postgres
 {
     public interface IEventPublisher
     {

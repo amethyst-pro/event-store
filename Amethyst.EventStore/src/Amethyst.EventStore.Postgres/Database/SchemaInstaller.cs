@@ -1,7 +1,7 @@
 ﻿using System;
 using Npgsql;
 
-namespace Amethyst.EventStore.Postgres
+namespace Amethyst.EventStore.Postgres.Database
 {
     public sealed class SchemaInstaller : IDisposable
     {

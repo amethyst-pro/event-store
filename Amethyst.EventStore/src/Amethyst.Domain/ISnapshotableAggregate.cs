@@ -1,9 +1,12 @@
+using SharpJuice.Essentials;
+
 namespace Amethyst.Domain
 {
-    public interface ISnapshotableAggregate<out TId> : IAggregate<TId>
+    public interface ISnapshotableAggregate<out TId, out TSnapshot> : IAggregate<TId>
+        where TSnapshot : IAggregateSnapshot
     {
-        long StoredSnapshotVersion { get; }
+        Maybe<long> StoredSnapshotVersion { get; }
 
-        IAggregateSnapshot GetSnapshot();
+        TSnapshot GetSnapshot();
     }
 }

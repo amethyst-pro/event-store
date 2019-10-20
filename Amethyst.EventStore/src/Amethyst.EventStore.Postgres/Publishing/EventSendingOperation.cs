@@ -35,24 +35,21 @@ namespace Amethyst.EventStore.Postgres.Publishing
             {
                 await _publisher.PublishAsync(_events);
 
-                var lastEvent = _events.Last().EventNumber;
+                var lastEvent = _events.Last().Number;
 
-                using (var transaction = _connection.BeginTransaction())
-                using (var complete = BuildCompleteCommand(lastEvent, transaction))
-                {
-                    await complete.PrepareAsync();
-                    await complete.ExecuteNonQueryAsync();
+                using var transaction = _connection.BeginTransaction();
+                using var complete = BuildCompleteCommand(lastEvent, transaction);
+                
+                await complete.PrepareAsync();
+                await complete.ExecuteNonQueryAsync();
 
-                    await transaction.CommitAsync();
-                }
+                await transaction.CommitAsync();
             }
             catch
             {
-                using (var unlock = BuildUnlockCommand())
-                {
-                    await unlock.PrepareAsync();
-                    await unlock.ExecuteNonQueryAsync();
-                }
+                using var unlock = BuildUnlockCommand();
+                await unlock.PrepareAsync();
+                await unlock.ExecuteNonQueryAsync();
 
                 throw;
             }
