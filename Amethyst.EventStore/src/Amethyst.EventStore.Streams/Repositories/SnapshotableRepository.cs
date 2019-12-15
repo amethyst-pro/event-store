@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amethyst.EventStore.Abstractions;
 using Amethyst.EventStore.Abstractions.Metadata;
 using Amethyst.EventStore.Abstractions.Serialization;
+using Amethyst.EventStore.Abstractions.Storage;
 using Amethyst.EventStore.Domain;
 using Amethyst.EventStore.Domain.Abstractions;
 using Amethyst.EventStore.Streams.Metadata;

@@ -1,6 +1,7 @@
 using System;
 using Amethyst.EventStore.Abstractions;
 using Amethyst.EventStore.Abstractions.Serialization;
+using Amethyst.EventStore.Abstractions.Storage;
 
 namespace Amethyst.EventStore.Postgres.Configuration
 {

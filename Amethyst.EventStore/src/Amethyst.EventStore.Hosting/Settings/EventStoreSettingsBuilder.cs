@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amethyst.EventStore.Abstractions;
 using Amethyst.EventStore.Abstractions.Publishing;
 using Amethyst.EventStore.Abstractions.Serialization;
 using Amethyst.EventStore.Abstractions.Storage;

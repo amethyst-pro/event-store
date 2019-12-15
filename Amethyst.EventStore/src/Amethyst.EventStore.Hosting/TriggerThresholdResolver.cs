@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Amethyst.EventStore.Abstractions.Storage;
 
-namespace Amethyst.EventStore.Abstractions
+namespace Amethyst.EventStore.Hosting
 {
     public class TriggerThresholdResolver : ITriggerThresholdResolver
     {

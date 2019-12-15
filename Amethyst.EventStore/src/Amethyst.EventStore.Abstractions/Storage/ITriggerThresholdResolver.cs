@@ -1,4 +1,4 @@
-namespace Amethyst.EventStore.Abstractions
+namespace Amethyst.EventStore.Abstractions.Storage
 {
     public interface ITriggerThresholdResolver
     {
