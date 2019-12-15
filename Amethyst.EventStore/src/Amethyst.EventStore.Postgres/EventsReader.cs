@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amethyst.EventStore.Abstractions;
@@ -119,7 +120,7 @@ namespace Amethyst.EventStore.Postgres
             if (events.Count == 0)
                 return Empty(ReadStatus.NotFound, stream);
 
-            var lastEventNumber = events.Last().EventNumber;
+            var lastEventNumber = events.Last().Number;
 
             if (streamLastEventNumber < lastEventNumber)
                 throw new InconsistentReadException();

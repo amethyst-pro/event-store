@@ -6,9 +6,9 @@ using Amethyst.EventStore.Abstractions.Storage;
 
 namespace Amethyst.EventStore.Postgres.Configuration
 {
-    public sealed class EventsSettings
+    public sealed class StoreSettings
     {
-        public EventsSettings(
+        public StoreSettings(
             DbConnections connections,
             IReadOnlyDictionary<string, IEventStoreContext> contexts, 
             IEventSerializer serializer)

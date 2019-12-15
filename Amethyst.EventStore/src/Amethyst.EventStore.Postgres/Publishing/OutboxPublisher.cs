@@ -53,18 +53,16 @@ namespace Amethyst.EventStore.Postgres.Publishing
 
             async Task Publish(EventStoreSchema schema)
             {
-                using (var connection = new NpgsqlConnection(_connections.Default))
-                {
-                    await connection.OpenWithSchemaAsync(schema.Schema);
+                await using var connection = new NpgsqlConnection(_connections.Default);
+                await connection.OpenWithSchemaAsync(schema.Schema);
 
-                    try
-                    {
-                        await SendIfAny(schema.Category, schema.Context, connection);
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Add(ex);
-                    }
+                try
+                {
+                    await SendIfAny(schema.Category, schema.Context, connection);
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
                 }
             }
         }
@@ -96,7 +94,7 @@ namespace Amethyst.EventStore.Postgres.Publishing
                             continue;
                         }
 
-                        var operation = new EventSendingOperation(
+                        var operation = new SendingOperation(
                             stream,
                             lockId,
                             events,

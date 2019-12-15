@@ -7,10 +7,10 @@ namespace Amethyst.EventStore.Postgres
         public DbConnections(string @default, string readOnly)
         {
             if (string.IsNullOrWhiteSpace(@default))
-                throw new ArgumentException($"Default connection sting not specified.", nameof(@default));
+                throw new ArgumentException("Default connection sting not specified.", nameof(@default));
             
             if (string.IsNullOrWhiteSpace(readOnly))
-                throw new ArgumentException($"ReadOnly connection sting not specified.", nameof(readOnly));
+                throw new ArgumentException("ReadOnly connection sting not specified.", nameof(readOnly));
             
             Default = @default;
             ReadOnly = readOnly;
