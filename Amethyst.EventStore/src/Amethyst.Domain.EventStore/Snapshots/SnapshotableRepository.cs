@@ -1,14 +1,9 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
-using Amethyst.Domain;
-using Amethyst.EventStore.Streams.Abstractions;
-using Amethyst.EventStore.Streams.Abstractions.Metadata;
-using SharpJuice.Essentials;
 
-namespace Amethyst.EventStore.Domain
+namespace Amethyst.Domain.EventStore.Snapshots
 {
     public sealed class SnapshotableRepository<TAggregate, TId> : IRepository<TAggregate, TId>
         where TAggregate : ISnapshotableAggregate<TId>

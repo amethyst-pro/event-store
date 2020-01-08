@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Amethyst.Domain;
 
-namespace Amethyst.EventStore.Domain
+namespace Amethyst.Domain.EventStore
 {
     public interface IAggregateFactory<out TAggregate, in TId>
         where TAggregate : IAggregate<TId>

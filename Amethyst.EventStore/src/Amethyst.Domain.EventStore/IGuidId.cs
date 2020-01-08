@@ -1,6 +1,6 @@
 using System;
 
-namespace Amethyst.EventStore.Domain
+namespace Amethyst.Domain.EventStore
 {
     public interface IGuidId
     {

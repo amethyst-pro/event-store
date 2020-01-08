@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Amethyst.Domain;
 
-namespace Amethyst.EventStore.Domain
+namespace Amethyst.Domain.EventStore
 {
     public sealed class AggregateFactory<TAggregate, TId> : IAggregateFactory<TAggregate, TId>
         where TAggregate : IAggregate<TId>

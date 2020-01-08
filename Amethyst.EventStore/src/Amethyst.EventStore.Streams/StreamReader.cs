@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Amethyst.EventStore.Abstractions;
 using Amethyst.EventStore.Streams.Abstractions;
 
 namespace Amethyst.EventStore.Streams
 {
     public sealed class StreamReader : IStreamReader
     {
-        private readonly EventsReader<StoredEvent> _eventsReader;
+        private readonly IEventsReader<StoredEvent> _eventsReader;
 
-        public StreamReader(PgsqlConnections settings, IEventStoreContext context, IDbEventReader<StoredEvent> reader)
+        public StreamReader(IEventsReader<StoredEvent> eventsReader)
         {
-            _eventsReader = new EventsReader<StoredEvent>(settings, context, reader);
+            _eventsReader = eventsReader;
         }
 
         public Task<SliceReadResult<StoredEvent>> ReadEventsForward(StreamId stream, long start,

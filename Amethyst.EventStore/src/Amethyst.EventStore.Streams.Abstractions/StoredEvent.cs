@@ -10,7 +10,6 @@ namespace Amethyst.EventStore.Streams.Abstractions
         public readonly long EventNumber;
         public readonly string EventType;
         public readonly DateTime Created;
-        public readonly long CreatedEpoch;
         public readonly object Event;
         public readonly EventMetadata? Metadata;
 
@@ -20,7 +19,6 @@ namespace Amethyst.EventStore.Streams.Abstractions
             long eventNumber,
             string eventType,
             DateTime created,
-            long createdEpoch,
             object @event,
             EventMetadata? metadata)
         {
@@ -29,7 +27,6 @@ namespace Amethyst.EventStore.Streams.Abstractions
             EventNumber = eventNumber;
             EventType = eventType;
             Created = created;
-            CreatedEpoch = createdEpoch;
             Event = @event;
             Metadata = metadata;
         }

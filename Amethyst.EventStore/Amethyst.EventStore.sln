@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9DF38B4B-E2B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F4DD225C-A1EF-44D3-95B7-620A9569BF55}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.EventStore.Domain", "src\Amethyst.EventStore.Domain\Amethyst.EventStore.Domain.csproj", "{35D637DA-4EA1-4CC8-AC98-4F80C94780F3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.EventStore.Domain.Tests", "tests\Amethyst.EventStore.Domain.Tests\Amethyst.EventStore.Domain.Tests.csproj", "{4BAA7168-D454-43C4-816F-C023C3BC4CBE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.EventStore.Abstractions", "src\Amethyst.EventStore.Abstractions\Amethyst.EventStore.Abstractions.csproj", "{C2D70A61-336E-436C-BB72-C3EE13F47B11}"
@@ -19,11 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.EventStore.Streams
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.EventStore.Postgres", "src\Amethyst.EventStore.Postgres\Amethyst.EventStore.Postgres.csproj", "{74620B89-3253-445E-B0F4-AEDB5812570E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.EventStore", "src\Amethyst.EventStore\Amethyst.EventStore.csproj", "{EED87DC8-42EE-4E8C-8A31-5A3218CDC129}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.EventStore", "src\Amethyst.EventStore\Amethyst.EventStore.csproj", "{EED87DC8-42EE-4E8C-8A31-5A3218CDC129}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.EventStore.Streams.Abstractions", "src\Amethyst.EventStore.Streams.Abstractions\Amethyst.EventStore.Streams.Abstractions.csproj", "{1F1FB2BA-B6C0-42A4-96A8-7CE1378D9776}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.EventStore.Streams.Abstractions", "src\Amethyst.EventStore.Streams.Abstractions\Amethyst.EventStore.Streams.Abstractions.csproj", "{1F1FB2BA-B6C0-42A4-96A8-7CE1378D9776}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Domain", "src\Amethyst.Domain\Amethyst.Domain.csproj", "{B172081A-8390-4E40-9257-4FA3254E04FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Amethyst.Domain", "src\Amethyst.Domain\Amethyst.Domain.csproj", "{B172081A-8390-4E40-9257-4FA3254E04FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Domain.EventStore", "src\Amethyst.Domain.EventStore\Amethyst.Domain.EventStore.csproj", "{4C9C0763-B9A7-4AC3-87AA-D396189C65D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +31,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{35D637DA-4EA1-4CC8-AC98-4F80C94780F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35D637DA-4EA1-4CC8-AC98-4F80C94780F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35D637DA-4EA1-4CC8-AC98-4F80C94780F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35D637DA-4EA1-4CC8-AC98-4F80C94780F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4BAA7168-D454-43C4-816F-C023C3BC4CBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4BAA7168-D454-43C4-816F-C023C3BC4CBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BAA7168-D454-43C4-816F-C023C3BC4CBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -67,12 +63,15 @@ Global
 		{B172081A-8390-4E40-9257-4FA3254E04FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B172081A-8390-4E40-9257-4FA3254E04FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B172081A-8390-4E40-9257-4FA3254E04FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C9C0763-B9A7-4AC3-87AA-D396189C65D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C9C0763-B9A7-4AC3-87AA-D396189C65D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C9C0763-B9A7-4AC3-87AA-D396189C65D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C9C0763-B9A7-4AC3-87AA-D396189C65D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{35D637DA-4EA1-4CC8-AC98-4F80C94780F3} = {9DF38B4B-E2BC-4B23-8DC0-58EC0F6BA2B1}
 		{4BAA7168-D454-43C4-816F-C023C3BC4CBE} = {F4DD225C-A1EF-44D3-95B7-620A9569BF55}
 		{C2D70A61-336E-436C-BB72-C3EE13F47B11} = {9DF38B4B-E2BC-4B23-8DC0-58EC0F6BA2B1}
 		{4069F2C4-137C-4F3C-AC6B-FFC8411B651B} = {9DF38B4B-E2BC-4B23-8DC0-58EC0F6BA2B1}
@@ -81,6 +80,7 @@ Global
 		{EED87DC8-42EE-4E8C-8A31-5A3218CDC129} = {9DF38B4B-E2BC-4B23-8DC0-58EC0F6BA2B1}
 		{1F1FB2BA-B6C0-42A4-96A8-7CE1378D9776} = {9DF38B4B-E2BC-4B23-8DC0-58EC0F6BA2B1}
 		{B172081A-8390-4E40-9257-4FA3254E04FE} = {9DF38B4B-E2BC-4B23-8DC0-58EC0F6BA2B1}
+		{4C9C0763-B9A7-4AC3-87AA-D396189C65D6} = {9DF38B4B-E2BC-4B23-8DC0-58EC0F6BA2B1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4808DDAB-DA0D-4FB8-AC72-3D422495A89E}

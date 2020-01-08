@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Amethyst.Domain;
+using Amethyst.EventStore;
 using Amethyst.EventStore.Streams.Abstractions;
 using Amethyst.EventStore.Streams.Abstractions.Metadata;
 using SharpJuice.Essentials;
 
-namespace Amethyst.EventStore.Domain
+namespace Amethyst.Domain.EventStore
 {
     public sealed class EventSourcedRepository<TAggregate, TId> : IRepository<TAggregate, TId>
         where TAggregate : IAggregate<TId>
@@ -30,18 +29,20 @@ namespace Amethyst.EventStore.Domain
             _aggregateFactory = aggregateFactory ?? throw new ArgumentNullException(nameof(aggregateFactory));
             _reader = reader ?? throw new ArgumentNullException(nameof(reader));
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            _metadataContext = metadataContext ?? NullMetadataContext.Instance;
+            _metadataContext = metadataContext;
         }
 
         public async Task<Maybe<TAggregate>> GetAsync(TId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            var stream = GetStream(id);
-            var readResult = await stream.ReadEventsForward();
+           var readResult = await _reader.ReadEventsForward(GetStreamId(id));
 
             return readResult.Events.Count > 0
-                ? _aggregateFactory.Create(id, readResult.NextExpectedVersion, readResult.Events.Select(x => (IDomainEvent)x.Event).ToArray())
+                ? _aggregateFactory.Create(
+                    id, 
+                    readResult.LastEventNumber, 
+                    readResult.Events.Select(x => x.Event).ToArray())
                 : new Maybe<TAggregate>();
         }
 
@@ -51,9 +52,13 @@ namespace Amethyst.EventStore.Domain
 
             if (!aggregate.UncommittedEvents.Any())
                 return;
+            
+            var metadata = _metadataContext?.GetMetadata();
 
-            var stream = GetStream(aggregate.Id);
-            var result = await stream.Append(aggregate.UncommittedEvents, aggregate.Version);
+            var result = await _writer.Append(
+                GetStreamId(aggregate.Id),
+                aggregate.Version.OrElse(ExpectedVersion.Any),
+                aggregate.UncommittedEvents.Select(e => new StreamEvent(e, metadata)));
 
             aggregate.ClearUncommittedEvents(result.NextExpectedVersion);
         }
@@ -62,14 +67,10 @@ namespace Amethyst.EventStore.Domain
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            var stream = GetStream(id);
-            return stream.HasEvents();
+            return _reader.HasEvents(GetStreamId(id));
         }
 
-        private Stream GetStream(TId id)
-        {
-            var streamId = _streamIdResolver.Resolve<TAggregate, TId>(id);
-            return new Stream(streamId, _reader, _writer, _metadataContext);
-        }
+        private StreamId GetStreamId(TId id) =>
+            _streamIdResolver.Resolve<TAggregate, TId>(id);
     }
 }

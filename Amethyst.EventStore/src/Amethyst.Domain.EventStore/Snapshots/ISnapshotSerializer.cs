@@ -1,7 +1,6 @@
 using System.IO;
-using Amethyst.Domain;
 
-namespace Amethyst.EventStore.Domain
+namespace Amethyst.Domain.EventStore.Snapshots
 {
     public interface ISnapshotSerializer
     {

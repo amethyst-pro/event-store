@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Amethyst.EventStore.Postgres.Publishing;
 
 namespace Amethyst.EventStore.Postgres.Contexts
 {
@@ -12,8 +11,17 @@ namespace Amethyst.EventStore.Postgres.Contexts
             _resolverMaps = resolverMaps;
         }
 
-        public string GetSchema(StreamId stream) => 
+        public int GetPartitionsCount(string category) =>
+            _resolverMaps[category].GetPartitionsCount(category);
+
+        public string GetSchema(StreamId stream) =>
             _resolverMaps[stream.Category].GetSchema(stream);
+
+        public string GetSchema(string category, int partition) =>
+            _resolverMaps[category].GetSchema(category, partition);
+
+        public int GetPartition(StreamId stream) =>
+            _resolverMaps[stream.Category].GetPartition(stream);
 
         public IReadOnlyCollection<string> GetSchemas(string category) =>
             _resolverMaps[category].GetSchemas(category);

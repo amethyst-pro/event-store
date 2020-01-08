@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
@@ -10,9 +10,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Amethyst.Domain\Amethyst.Domain.csproj" />
     <ProjectReference Include="..\Amethyst.EventStore.Streams.Abstractions\Amethyst.EventStore.Streams.Abstractions.csproj" />
   </ItemGroup>
+
 </Project>

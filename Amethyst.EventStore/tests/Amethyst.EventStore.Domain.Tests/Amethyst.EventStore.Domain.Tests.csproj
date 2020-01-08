@@ -21,9 +21,5 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\Amethyst.EventStore.Domain\Amethyst.EventStore.Domain.csproj" />
-    </ItemGroup>
     
 </Project>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amethyst.EventStore.Postgres.Publishing;
 
 namespace Amethyst.EventStore.Postgres.Contexts
 {
@@ -19,10 +18,10 @@ namespace Amethyst.EventStore.Postgres.Contexts
             _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         }
 
-        public string GetSchema(StreamId id)
+        public int GetPartition(StreamId id)
         {
             Span<byte> idBytes = stackalloc byte[16];
-            
+
             // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
             if (!id.Id.TryWriteBytes(idBytes))
                 throw new InvalidOperationException("Can't write guid to bytes");
@@ -34,13 +33,18 @@ namespace Amethyst.EventStore.Postgres.Contexts
 
             var partition = Math.Abs(hash % _partitionCount);
 
-            return id.Category.ToLower() + "_" + partition;
+            return partition;
         }
+
+        public int GetPartitionsCount(string _) => _partitionCount;
+
+        public string GetSchema(string category, int partition) => category.ToLower() + "_" + partition;
+
+        public string GetSchema(StreamId id) => GetSchema(id.Category, GetPartition(id));
 
         public IReadOnlyCollection<string> GetSchemas(string category)
         {
             var schemaPrefix = category.ToLower() + "_";
-
             return Enumerable.Range(0, _partitionCount)
                 .Select(i => schemaPrefix + i)
                 .ToArray();

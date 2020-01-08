@@ -1,6 +1,6 @@
-﻿using Amethyst.Domain;
+﻿using Amethyst.EventStore;
 
-namespace Amethyst.EventStore.Domain
+namespace Amethyst.Domain.EventStore
 {
     public sealed class AggregateStreamIdResolver : IAggregateStreamIdResolver
     {
