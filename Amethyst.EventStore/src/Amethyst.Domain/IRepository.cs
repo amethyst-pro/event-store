@@ -6,10 +6,10 @@ namespace Amethyst.Domain
     public interface IRepository<TAggregate, in TId>
         where TAggregate : IAggregate<TId>
     {
-        Task<Maybe<TAggregate>> GetAsync(TId id);
+        Task<Maybe<TAggregate>> Get(TId id);
         
-        Task SaveAsync(TAggregate aggregate);
+        Task Save(TAggregate aggregate);
         
-        Task<bool> ExistsAsync(TId id);
+        Task<bool> Exists(TId id);
     }
 }

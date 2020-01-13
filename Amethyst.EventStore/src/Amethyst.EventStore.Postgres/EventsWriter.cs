@@ -33,7 +33,7 @@ namespace Amethyst.EventStore.Postgres
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<WriteResult> AppendToStreamAsync(
+        public async Task<WriteResult> AppendToStream(
             StreamId stream,
             long expectedVersion,
             IReadOnlyCollection<EventData> events)

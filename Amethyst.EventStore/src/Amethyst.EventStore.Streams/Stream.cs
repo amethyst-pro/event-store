@@ -58,7 +58,7 @@ namespace Amethyst.EventStore.Streams
 
         public Task<WriteResult> Append(IEnumerable<object> events, Maybe<long> expectedVersion = default)
         {
-            return _writer.Append(
+            return _writer.AppendAsync(
                 _id,
                 expectedVersion.OrElse(ExpectedVersion.NoStream),
                 events.Select(e => new StreamEvent(e, _metadataContext.GetMetadata())));

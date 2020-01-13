@@ -1,4 +1,4 @@
-﻿namespace Amethyst.EventStore.Streams.Abstractions.Metadata
+﻿namespace Amethyst.Metadata
 {
     public readonly struct EventMetadata
     {

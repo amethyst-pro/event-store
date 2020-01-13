@@ -32,14 +32,9 @@ namespace Amethyst.EventStore.Postgres.Reading
                 var created = reader.GetDateTime(EventFieldMap.CreatedIndex);
 
                 var @event = _materializer.Create(
-                    new EventHeader(
-                        stream,
-                        id,
-                        number,
-                        type,
-                        created),
-                    dataReader
-                );
+                    stream,
+                    new EventHeader(id, number, type, created),
+                    dataReader);
 
                 events.Add(@event);
                 lastEventNumber = number;

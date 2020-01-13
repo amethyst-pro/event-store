@@ -18,12 +18,12 @@ namespace Amethyst.EventStore.Streams
         public Task<SliceReadResult<StoredEvent>> ReadEventsForward(StreamId stream, long start,
             int count = int.MaxValue)
         {
-            return _eventsReader.ReadEventsForwardAsync(stream, start, count);
+            return _eventsReader.ReadEventsForward(stream, start, count);
         }
 
         public async Task<ReadResult<StoredEvent>> ReadEvent(StreamId stream, long eventNumber)
         {
-            var eventsReadResult = await _eventsReader.ReadEventsForwardAsync(stream, eventNumber, count: 1);
+            var eventsReadResult = await _eventsReader.ReadEventsForward(stream, eventNumber, count: 1);
 
             switch (eventsReadResult.Status)
             {

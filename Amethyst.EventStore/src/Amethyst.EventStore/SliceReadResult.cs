@@ -7,7 +7,7 @@ namespace Amethyst.EventStore
     {
         public readonly ReadStatus Status;
         public readonly StreamId Stream;
-        public readonly IReadOnlyCollection<T> Events;
+        public readonly T[] Events;
         public readonly long LastEventNumber;
         public readonly bool IsEndOfStream;
 
@@ -17,7 +17,7 @@ namespace Amethyst.EventStore
         public SliceReadResult(
             ReadStatus status,
             StreamId stream,
-            IReadOnlyCollection<T> events,
+            T[] events,
             long lastEventNumber,
             bool isEndOfStream)
         {

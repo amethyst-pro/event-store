@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Amethyst.EventStore.Streams.Abstractions.Metadata;
+using Amethyst.Metadata;
 
 namespace Amethyst.EventStore.Streams.Abstractions
 {

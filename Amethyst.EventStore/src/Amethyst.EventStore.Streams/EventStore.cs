@@ -24,7 +24,10 @@ namespace Amethyst.EventStore.Streams
         public Task<ReadResult<StoredEvent>> ReadEvent(StreamId stream, long eventNumber)
             => _reader.ReadEvent(stream, eventNumber);
 
-        public Task<WriteResult> Append(StreamId stream, long expectedVersion, IReadOnlyCollection<EventData> events)
+        public Task<WriteResult> Append(
+            StreamId stream,
+            long expectedVersion,
+            IEnumerable<StreamEvent> events)
             => _writer.Append(stream, expectedVersion, events);
     }
 }

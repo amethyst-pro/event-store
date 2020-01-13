@@ -18,7 +18,7 @@ namespace Amethyst.EventStore.Streams
             _serializer = serializer;
         }
 
-        public Task<WriteResult> Append(
+        public Task<WriteResult> AppendAsync(
             StreamId stream, long expectedVersion, IEnumerable<StreamEvent> events)
         {
             if (events == null)
@@ -28,7 +28,7 @@ namespace Amethyst.EventStore.Streams
                 .Select(e => _serializer.Serialize(e.Event, Guid.NewGuid(), e.Metadata))
                 .ToArray();
 
-            return _writer.AppendToStreamAsync(stream, expectedVersion, data);
+            return _writer.AppendToStream(stream, expectedVersion, data);
         }
     }
 }

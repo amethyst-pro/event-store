@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Amethyst.EventStore.Streams.Abstractions.Metadata
+namespace Amethyst.Metadata
 {
     public interface IMetadataSerializer
     {

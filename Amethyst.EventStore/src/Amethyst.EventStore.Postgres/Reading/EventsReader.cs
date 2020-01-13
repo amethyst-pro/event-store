@@ -23,7 +23,7 @@ namespace Amethyst.EventStore.Postgres.Reading
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<SliceReadResult<T>> ReadEventsForwardAsync(StreamId stream, long start, int count)
+        public async Task<SliceReadResult<T>> ReadEventsForward(StreamId stream, long start, int count)
         {
             if (start < StreamPosition.End)
                 throw new ArgumentOutOfRangeException(nameof(start));

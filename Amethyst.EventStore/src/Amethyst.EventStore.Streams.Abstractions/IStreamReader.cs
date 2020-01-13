@@ -8,5 +8,9 @@ namespace Amethyst.EventStore.Streams.Abstractions
             int count = int.MaxValue);
 
         Task<ReadResult<StoredEvent>> ReadEvent(StreamId stream, long eventNumber);
+
+        Task<SnapshotableReadResult<StoredEvent, TSnapshot>> ReadStream<TSnapshot>(StreamId stream);
+
+        Task<bool> Exists(StreamId stream);
     }
 }

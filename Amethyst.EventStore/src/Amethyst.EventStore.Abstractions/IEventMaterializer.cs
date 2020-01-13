@@ -2,6 +2,6 @@
 {
     public interface IEventMaterializer<out T>
     {
-        T Create(EventHeader header, IEventDataReader reader);
+        T Create(in StreamId stream, in EventHeader header, IEventDataReader reader);
     }
 }
