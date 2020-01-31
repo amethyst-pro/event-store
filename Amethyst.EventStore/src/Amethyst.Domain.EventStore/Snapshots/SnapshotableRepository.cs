@@ -8,11 +8,6 @@ using SharpJuice.Essentials;
 
 namespace Amethyst.Domain.EventStore.Snapshots
 {
-    public interface IAggregateOptions<TAggregate>
-    {
-        public long SnapshotThreshold { get; }
-    }
-
     public sealed class SnapshotableRepository<TAggregate, TId, TSnapshot> : IRepository<TAggregate, TId>
         where TAggregate : ISnapshotableAggregate<TId, TSnapshot>
         where TId : IGuidId

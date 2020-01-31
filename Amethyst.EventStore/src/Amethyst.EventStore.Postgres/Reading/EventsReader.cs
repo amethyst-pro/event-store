@@ -132,15 +132,17 @@ namespace Amethyst.EventStore.Postgres.Reading
                         FROM events
                         WHERE stream_id = @streamId ";
 
-            const string selectHeaderForward = selectHeader + " AND number >= @start ORDER BY id LIMIT @count;";
+            const string selectHeaderForward = selectHeader + " AND number >= @start ORDER BY number LIMIT @count;";
 
-            const string selectHeaderLast = selectHeader + " ORDER BY id DESC LIMIT 1;";
+            const string selectHeaderLast = selectHeader + " ORDER BY number DESC LIMIT 1;";
+
+            const string selectFullStream = selectHeader + " ORDER BY number";
 
             var readLast = start < 0;
 
-            var select = (readLast
-                ? selectHeaderLast
-                : selectHeaderForward);
+            var select = start == 0 && count == int.MaxValue
+                ? selectFullStream
+                : (readLast ? selectHeaderLast : selectHeaderForward);
 
             var command = new NpgsqlCommand(select, connection, transaction)
             {
